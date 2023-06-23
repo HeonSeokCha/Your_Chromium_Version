@@ -1,12 +1,17 @@
 {
-  "name": "First Extension",
-  "description": "My first Chrome Extension!",
+  "name": "Your Chromium Version",
+  "description": "Check and Download Lastest Chromium Version!",
   "version": "1.0",
   "manifest_version": 3,
-  "action": {
-    "default_popup": "popup.html"
+  "background": {
+    "service_worker": "src/script/background.js"
   },
-  "permissions":[
-    "storage"
-  ]
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_icon": "src/icons/icon.png"
+  },
+  "permissions":["downloads"],
+  "icons": {
+    "128": "src/icons/icon.png"
+  }
 }
