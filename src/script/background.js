@@ -1,9 +1,11 @@
-chrome.runtime.onMessage.addListener((request,sender,sendResponse) => {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.action) {
         case 'GET_NEED_UPDATE':
             (async () => {
                 const currentVersion = await getYourVersion();
-                const lastestVersion = await getLastestVersion(request.baseUrl);
+                const lastestVersion = getLastestVersion(
+                    await getLastReleaseInfo(request.baseUrl)
+                );
                 const isNeedUpdate = compareVersion(currentVersion, lastestVersion);
 
                 sendResponse(
@@ -17,6 +19,16 @@ chrome.runtime.onMessage.addListener((request,sender,sendResponse) => {
             break;
 
         case 'REQUEST_LASTEST_DOWNLOAD':
+            (async () => {
+                const syncInstallerInfo = getSyncInstallerInfo(
+                    await getLastReleaseInfo(request.baseUrl)
+                );
+                sendResponse(
+                    {
+                        downloadUrl: syncInstallerInfo
+                    }
+                );
+            })();
             break;
     }
     return true;
@@ -28,10 +40,13 @@ async function getYourVersion() {
     return result.uaFullVersion;
 }
 
-async function getLastestVersion(baseUrl) {
+async function getLastReleaseInfo(baseUrl) {
     const lastReleaseInfo = await fetch(baseUrl + '/releases/latest');
-    const lastesetVersion = await lastReleaseInfo.json();
-    return convertFormat(lastesetVersion.tag_name);
+    return await lastReleaseInfo.json();
+}
+
+function getLastestVersion(lastReleaseInfo) {
+    return convertFormat(lastReleaseInfo.tag_name);
 }
 
 
@@ -52,4 +67,18 @@ function convertFormat(version) {
     }
     temp = temp.split('-')[0];
     return temp;
+}
+
+function getSyncInstallerInfo(lastReleaseInfo) {
+    let assestList = lastReleaseInfo.assets;
+    const syncInfo = assestList.find(isSyncInstaller);
+    return syncInfo.browser_download_url;
+}
+
+
+function isSyncInstaller(element) {
+    let nameArr = element.name.split('.');
+    if (nameArr[1] === 'sync' && nameArr[2] === 'exe') {
+        return true;
+    }
 }
