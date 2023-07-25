@@ -52,8 +52,8 @@ function getLastestVersion(lastReleaseInfo) {
 
 function compareVersion(current, last) {
     let needUpate = false;
-    for (var i = 0; i < 4; i++) {
-        if (last.split(".")[i] > current.split(".")[i]) {
+    for (var i = 0; i < current.split(".").length; i++) {
+        if (parseInt(last.split(".")[i]) > parseInt(current.split(".")[i])) {
             needUpate = true;
         }
     }
@@ -62,7 +62,7 @@ function compareVersion(current, last) {
 
 function convertFormat(version) {
     var temp = version
-    if (temp.indexOf('v') == -1) {
+    if (temp.indexOf('v') == 0) {
         temp = temp.replace('v', '');
     }
     temp = temp.split('-')[0];
