@@ -31,7 +31,32 @@ async function sendRequestDonwload() {
             action: "REQUEST_LASTEST_DOWNLOAD",
             baseUrl: baseUrl
         }, function (response) {
-            window.open(response.downloadUrl);
+            chrome.downloads.download({
+                url: response.downloadUrl,
+                filename: document.getElementById('current_version').innerText+'.exe'
+            });
+
+            chrome.downloads.onCreated.addListener(function() {
+
+                document.getElementById('btn_download').style.display = 'none';
+
+                chrome.downloads.onChanged.addListener(function(changeInfo) {
+                    if (changeInfo?.filename?.current != null && changeInfo?.filename?.current != '') {
+                        console.log(changeInfo)
+                    }
+
+                    chrome.downloads.search({id: changeInfo.id }, function(item) {
+                        console.log(item[0].state)
+                        if (item[0].state == 'in_progress') {
+                            document.getElementById("txt_download_state").style.display = 'block'
+                        }
+
+                        if (item[0].state == 'complete') {
+                            document.getElementById("txt_download_state").innerText = 'Donwload Compelete. Check Your Download Directory.'
+                        }
+                    })   
+                })
+            })
         }
     );
 }
