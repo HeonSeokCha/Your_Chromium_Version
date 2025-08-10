@@ -33,7 +33,7 @@ async function sendRequestDonwload() {
         }, function (response) {
             chrome.downloads.download({
                 url: response.downloadUrl,
-                filename: document.getElementById('current_version').innerText+'.exe'
+                filename: document.getElementById('last_version').innerText+'.exe'
             });
 
             chrome.downloads.onCreated.addListener(function() {

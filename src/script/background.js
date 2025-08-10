@@ -78,7 +78,9 @@ function getSyncInstallerInfo(lastReleaseInfo) {
 
 function isSyncInstaller(element) {
     let nameArr = element.name.split('.');
-    if (nameArr[1] === 'sync' && nameArr[2] === 'exe') {
-        return true;
+    if (nameArr.length === 3) {
+        return nameArr[1] === 'sync' && nameArr[2] === 'exe'
+    } else {
+        return element.name === 'mini_installer.exe'
     }
 }
